@@ -1,5 +1,7 @@
 trigger:
 - main
+variables:
+  - group: 'GitHub-Sync-Secrets'
 pool:
   vmImage: windows-latest
 stages:
