@@ -24,14 +24,14 @@ stages:
       displayName: Build
       inputs:
         command: build
-        projects: $(WORKING_DIRECTORY)\*.csproj
+        projects: EmailService\*.csproj
         arguments: --configuration Release
     - task: DotNetCoreCLI@2
       displayName: Publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: $(WORKING_DIRECTORY)\*.csproj
+        projects: EmailService\*.csproj
         arguments: --configuration Release --output published
         zipAfterPublish: true
     - task: PublishBuildArtifacts@1
