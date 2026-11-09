@@ -1,5 +1,5 @@
 trigger:
-- master
+- main
 pool:
   vmImage: windows-latest
 stages:
@@ -14,30 +14,30 @@ stages:
       displayName: Use .NET SDK
       inputs:
         packageType: sdk
-        version: $(DOTNET_CORE_VERSION)
+        version: 10.0.x
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:
         command: restore
-        projects: $(WORKING_DIRECTORY)\*.csproj
+        projects: EmailService\*.csproj
     - task: DotNetCoreCLI@2
       displayName: Build
       inputs:
         command: build
         projects: $(WORKING_DIRECTORY)\*.csproj
-        arguments: --configuration $(CONFIGURATION)
+        arguments: --configuration Release
     - task: DotNetCoreCLI@2
       displayName: Publish
       inputs:
         command: publish
         publishWebProjects: false
         projects: $(WORKING_DIRECTORY)\*.csproj
-        arguments: --configuration $(CONFIGURATION) --output $(AZURE_PACKAGE_PATH)
+        arguments: --configuration Release --output published
         zipAfterPublish: true
     - task: PublishBuildArtifacts@1
       displayName: Drop
       inputs:
-        PathtoPublish: $(AZURE_PACKAGE_PATH)
+        PathtoPublish: published
         ArtifactName: drop
         publishLocation: Container
 - stage: Deploy
@@ -49,7 +49,7 @@ stages:
     - download: current
       artifact: drop
     - task: AzureFunctionApp@2
-      displayName: $(DEPLOY_DISPLAY_NAME)
+      displayName: Deploy to Azure Function App
       inputs:
         azureSubscription: $(AZURE_SUBSCRIPTION)
         appType: $(APP_TYPE)
