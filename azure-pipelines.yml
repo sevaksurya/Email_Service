@@ -17,17 +17,46 @@ stages:
       inputs:
         packageType: sdk
         version: 10.0.x
+    
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:
         command: restore
         projects: EmailService\*.csproj
+
+    # --- ADDED SECURITY & UPGRADE SCANNERS ---
+    
+    - pwsh: |
+        Write-Host "Scanning for vulnerable packages..."
+        dotnet list EmailService\*.csproj package --vulnerable --include-transitive
+      displayName: Check Vulnerable Packages
+      continueOnError: true
+
+    - pwsh: |
+        Write-Host "Scanning for deprecated packages..."
+        $deprecated = dotnet list EmailService\*.csproj package --deprecated
+        $deprecated | Out-Host
+        
+        if ($deprecated -match "has the following deprecated packages") {
+            Write-Host "##vso[task.logissue type=warning]Deprecated packages detected. Review logs for details."
+        }
+      displayName: Check Deprecated Packages
+
+    - pwsh: |
+        Write-Host "Scanning for outdated packages..."
+        dotnet list EmailService\*.csproj package --outdated --include-transitive
+      displayName: Check Outdated Packages
+      continueOnError: true
+
+    # --- END SCANNERS ---
+
     - task: DotNetCoreCLI@2
       displayName: Build
       inputs:
         command: build
         projects: EmailService\*.csproj
         arguments: --configuration Release
+        
     - task: DotNetCoreCLI@2
       displayName: Publish
       inputs:
@@ -36,12 +65,14 @@ stages:
         projects: EmailService\*.csproj
         arguments: --configuration Release --output published
         zipAfterPublish: true
+        
     - task: PublishBuildArtifacts@1
       displayName: Drop
       inputs:
         PathtoPublish: published
         ArtifactName: drop
         publishLocation: Container
+
 - stage: Deploy
   displayName: Deploy Stage
   jobs:
