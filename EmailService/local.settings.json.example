@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "DispatcherSchedule": "0 */1 * * * *",
+    "Smtp:SenderEmail": "your-email@gmail.com",
+    "Smtp:SenderName": "Notification Service",
+    "Smtp:AppPassword": "your-16-character-app-password",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": ""
+  }
+}

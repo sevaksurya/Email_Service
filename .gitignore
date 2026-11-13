@@ -363,3 +363,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# VS Code
+.vscode/
+
+# Azure Functions local settings
+local.settings.json
