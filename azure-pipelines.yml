@@ -24,28 +24,31 @@ stages:
         command: restore
         projects: EmailService\*.csproj
 
-    # --- ADDED SECURITY & UPGRADE SCANNERS ---
+# --- ADDED SECURITY & UPGRADE SCANNERS ---
     
     - pwsh: |
         Write-Host "Scanning for vulnerable packages..."
-        dotnet list EmailService\*.csproj package --vulnerable --include-transitive
+        dotnet list package --vulnerable --include-transitive
       displayName: Check Vulnerable Packages
+      workingDirectory: 'EmailService'
       continueOnError: true
 
     - pwsh: |
         Write-Host "Scanning for deprecated packages..."
-        $deprecated = dotnet list EmailService\*.csproj package --deprecated
+        $deprecated = dotnet list package --deprecated
         $deprecated | Out-Host
         
         if ($deprecated -match "has the following deprecated packages") {
             Write-Host "##vso[task.logissue type=warning]Deprecated packages detected. Review logs for details."
         }
       displayName: Check Deprecated Packages
+      workingDirectory: 'EmailService'
 
     - pwsh: |
         Write-Host "Scanning for outdated packages..."
-        dotnet list EmailService\*.csproj package --outdated --include-transitive
+        dotnet list package --outdated --include-transitive
       displayName: Check Outdated Packages
+      workingDirectory: 'EmailService'
       continueOnError: true
 
     # --- END SCANNERS ---
